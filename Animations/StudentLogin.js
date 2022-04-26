@@ -1,12 +1,20 @@
-import { StyleSheet, Text, View, Animated, PanResponder,TouchableWithoutFeedback } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Animated, PanResponder,TouchableOpacity, TextInput, Keyboard } from 'react-native'
+import React, {useEffect, useState} from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { useNavigation } from '@react-navigation/native'
+import { NativeBaseProvider, Tooltip } from 'native-base'
+import {LogBox} from 'react-native'
+
+LogBox.ignoreLogs(['Require cycle:']);
 
 
 const StudentLogin = () => {
 
     const navigation = useNavigation()
+    const [screens , setScreens] = useState(0)
+    const [keybord , setkeybord] = useState(0)
+    const [tooltip , settooltip] =  useState(true)
+    const [label , setLabel] =  useState("Pull me for Admin Login")
 
     const position = new Animated.ValueXY();
     const anim = new Animated.Value(0)
@@ -24,41 +32,37 @@ const StudentLogin = () => {
               x: position.x._value,
               y: position.y._value,
             });
-            // console.log('After setOffset - x coordinate', {...position.x});
-            // console.log('After setOffset - y coordinate', {...position.y});
             position.setValue({x: 0, y: 0});
-            // console.log('After setValue - x coordinate', {...position.x});
-            // console.log('After setValue - y coordinate', {...position.y});
           },
           onPanResponderMove: (event, gestureState) => {
             // console.log ('Move');
-            // console.log(gestureState.dy >= -45 ? gestureState.dy : -45.0)
             
             //console.log({...gestureState});
-            position.x.setValue(gestureState.dx);
+            // position.x.setValue(gestureState.dx);
             position.y.setValue(gestureState.dy >= -45 ? ( gestureState.dy <= 0 ? gestureState.dy : 0 ) : -45.0 );
             // console.log({...position});
+            if (position.y._value == -35){
+                // console.log("inside")
+                !tooltip ?
+               ( setLabel('Admin Login'),
+                settooltip(true, console.log("tooltip : true : ", !tooltip))) : null
+            }
             
             
           },
           onPanResponderRelease: (evt, gestureState) => {
+            position.y._value !== -45 ? position.y.setValue(0) : null
             // console.log ('Release');
-            // console.log('Before flattenOffset - x coordinate', {...position.x});
-            // console.log('Before flattenOffset - y coordinate', {...position.y});
-        //    position.flattenOffset();
-            // console.log('After flattenOffset - x coordinate', {...position.x});
-            // console.log('After flattenOffset - y coordinate', {...position.y});
+        //    position.flattenOffset();]
             if (position.y._value == -45){
                 // console.log("inside")
                 navigation.navigate('AdminLogin')
                 position.y.setValue(0)
+                settooltip(false, console.log('tooltip : false : ', !tooltip))
+
             }
           },
     })
-    const colorInterpolation = anim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, -20 ]
-      });
 
     const animatedStyles = {
         transform: [
@@ -70,13 +74,7 @@ const StudentLogin = () => {
         ]
     }
 
-    const autoanimation = {
-        transform:[
-            {
-                translateY : colorInterpolation
-            }
-        ]
-    }
+    
     const Animationn = () => {
         Animated.spring(anim , {
             toValue:1,
@@ -90,26 +88,89 @@ const StudentLogin = () => {
             }).start();
         });
     }
-    React.useEffect(()=>{
+    useEffect(()=>{
         Animationn()
     },[autoanimation])
 
+    const positionInterpolation = anim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, -20 ]
+      });
+
+    useEffect(() => {
+
+        const timer = setTimeout(() => {
+          console.log('after 2 second!')
+          setScreens(1)
+          settooltip(false)
+        }, 2000);
+        return () => clearTimeout(timer);
+      }, []);
+
+    const autoanimation = {
+        transform:[
+            {
+                translateY : positionInterpolation
+            }
+        ]
+    }
+
     
   return (
-    <View style={styles.div1}>
-      <Text>StudentLogin</Text>
+     <NativeBaseProvider>
+        <View style={styles.div1}>
+        
+        <View style={styles.inputs}>
+            <Text style={styles.h1}>Student Login Page</Text>
+
+            <View style={styles.inputView}>
+                <TextInput
+                  style={[styles.TextInput, {}]}
+                  placeholder="Email"
+                //   value={email}
+                  placeholderTextColor="#20232a"
+                //   onChangeText={(email) => setEmail(email)}
+                />
+                
+            </View>
+            <View style={styles.inputView}>
+                <TextInput
+                  style={[styles.TextInput, {marginBottom:5}]}
+                  placeholder="Password"
+                //   value={password}
+                  placeholderTextColor="#20232a"
+                  secureTextEntry={true}
+                //   onChangeText={(password) => setPassword(password)}
+                />
+                  
+            </View>
+            <TouchableOpacity 
+                style={styles.loginBtn} 
+                // onPress={()=>handleLogin()}
+                >
+                  <Text style={styles.loginText}>LOGIN</Text>
+              </TouchableOpacity>
+        </View>
       
-      <Animated.View 
-      {...panResponder1.panHandlers}
-      style={[styles.div3, animatedStyles, autoanimation]}>
-          {/* <TouchableWithoutFeedback onPress={Animationn()}> */}
-      <View style={styles.div2}>
-          {/* <View style={styles.div99}/> */}
-      </View>
-      {/* </TouchableWithoutFeedback> */}
-      </Animated.View>
-      
-    </View>
+        <Animated.View 
+            {...panResponder1.panHandlers}
+            style={[styles.div3, (screens === 0 ? autoanimation : animatedStyles) ]}>
+               
+            <Tooltip 
+                label={label} 
+                isOpen={tooltip}
+                // style={[(screens === 0 ? autoanimation : animatedStyles),{position:'absolute'}]}
+                >
+    
+                <View style={styles.div2}>
+                    {/* <View style={styles.div99}/> */}
+                </View>
+            </Tooltip>
+            
+            </Animated.View>
+        
+        </View>
+    </NativeBaseProvider>
   )
 }
 
@@ -117,15 +178,17 @@ export default StudentLogin
 
 const styles = StyleSheet.create({
     div1:{
-        flex:1
+        flex:1,
+        alignItems:'center',
+        justifyContent:'center'
     },
     div2:{
         height:50,
         width:50,
-        borderColor:'red',
+        borderColor:'black',
         borderWidth:2,
         borderRadius:25,
-        backgroundColor:'brown',
+        backgroundColor:'#61dafb',
         margin:10,
         alignItems: 'center',
         justifyContent: 'center',
@@ -134,8 +197,9 @@ const styles = StyleSheet.create({
     },
     div3:{
         flex:1,
+        alignSelf:'flex-end',
         justifyContent:"flex-end",
-        alignItems:"flex-end"
+        // alignItems:"flex-end"
     },
     div99: {
         height: 10,
@@ -144,5 +208,43 @@ const styles = StyleSheet.create({
         backgroundColor:'pink',
         // alignSelf: 'center',
 
-    }
+    },
+    inputView: {
+        backgroundColor: "#fff",
+        width: "80%",
+        height: 45,
+        marginBottom: 20,
+      },
+     
+      TextInput: {
+        height: 50,
+        flex: 1,
+        padding: 10,
+      },
+      inputs : {
+          flex:1,
+          width: "90%",
+          alignItems:'center',
+          justifyContent:'center',
+          marginTop:100
+
+      },
+      h1 :{
+          fontWeight:'bold',
+          fontSize:25,
+        //   top:50,
+        margin:20
+      },
+      loginBtn: {
+        width: "80%",
+        height: 50,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 40,
+        backgroundColor: "#61dafb",
+      },
+      loginText:{
+        fontSize:20,
+        fontWeight:"bold"
+      }
 })
