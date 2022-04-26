@@ -14,9 +14,9 @@ const App = () => {
       {/* <Camera/> */}
       {/* <Contacts1/> */}
       {/* <DeviceInfo1/> */}
-      {/* <Maps1/> */}
+      <Maps1/>
       <NavigationContainer>
-        <Navigation/>
+        {/* <Navigation/> */}
       </NavigationContainer>
     </View>
   )
