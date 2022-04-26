@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Animated, PanResponder,TouchableOpacity, TextInput, Keyboard } from 'react-native'
 import React, {useEffect, useState} from 'react'
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useNavigation } from '@react-navigation/native'
 import { NativeBaseProvider, Tooltip } from 'native-base'
 import {LogBox} from 'react-native'
@@ -14,7 +14,7 @@ const StudentLogin = () => {
     const [screens , setScreens] = useState(0)
     const [keybord , setkeybord] = useState(0)
     const [tooltip , settooltip] =  useState(true)
-    const [label , setLabel] =  useState("Pull me for Admin Login")
+    const [label , setLabel] =  useState("For Admin Login Pull me up")
 
     const position = new Animated.ValueXY();
     const anim = new Animated.Value(0)
@@ -41,19 +41,25 @@ const StudentLogin = () => {
             // position.x.setValue(gestureState.dx);
             position.y.setValue(gestureState.dy >= -45 ? ( gestureState.dy <= 0 ? gestureState.dy : 0 ) : -45.0 );
             // console.log({...position});
-            if (position.y._value == -35){
-                // console.log("inside")
-                !tooltip ?
-               ( setLabel('Admin Login'),
-                settooltip(true, console.log("tooltip : true : ", !tooltip))) : null
-            }
+            // if (position.y._value <= -30){
+            //     // console.log("position.y._value :", position.y._value)
+            //     position.y.setValue(gestureState.dy >= -45 ? ( gestureState.dy <= 0 ? gestureState.dy : 0 ) : -45.0 );
+            //     setLabel('Admin Login'),
+            //     settooltip(true, position.y.setValue(gestureState.dy >= -45 ? ( gestureState.dy <= 0 ? gestureState.dy : 0 ) : -45.0 ))
+            // }
+            // if (position.y._value == 0){
+            //     // console.log("position.y._value :", position.y._value)
+            //     settooltip(false)
+            //     // position.y.setValue(gestureState.dy >= -45 ? ( gestureState.dy <= 0 ? gestureState.dy : 0 ) : -45.0 );
+            // }
             
             
           },
           onPanResponderRelease: (evt, gestureState) => {
-            position.y._value !== -45 ? position.y.setValue(0) : null
+                
+                position.y._value !== -45 ?( position.y.setValue(0),settooltip(false) ): null
             // console.log ('Release');
-        //    position.flattenOffset();]
+        //    position.flattenOffset();
             if (position.y._value == -45){
                 // console.log("inside")
                 navigation.navigate('AdminLogin')
@@ -156,16 +162,23 @@ const StudentLogin = () => {
             {...panResponder1.panHandlers}
             style={[styles.div3, (screens === 0 ? autoanimation : animatedStyles) ]}>
                
-            <Tooltip 
+            {/* <Tooltip 
                 label={label} 
                 isOpen={tooltip}
                 // style={[(screens === 0 ? autoanimation : animatedStyles),{position:'absolute'}]}
-                >
+                > */}
+                {tooltip ? <Text style={styles.txt1}>{label}</Text> : null }
+                    
     
                 <View style={styles.div2}>
+                    <AntDesign
+                        name='infocirlce'
+                        size={45}
+                        style={{color:'#61dafb'}}
+                    />
                     {/* <View style={styles.div99}/> */}
                 </View>
-            </Tooltip>
+            {/* </Tooltip> */}
             
             </Animated.View>
         
@@ -188,10 +201,11 @@ const styles = StyleSheet.create({
         borderColor:'black',
         borderWidth:2,
         borderRadius:25,
-        backgroundColor:'#61dafb',
-        margin:10,
+        backgroundColor:'#000000',
+        margin:20,
         alignItems: 'center',
         justifyContent: 'center',
+        marginLeft:5
         
         
     },
@@ -199,7 +213,8 @@ const styles = StyleSheet.create({
         flex:1,
         alignSelf:'flex-end',
         justifyContent:"flex-end",
-        // alignItems:"flex-end"
+        alignItems:"flex-end",
+        flexDirection:'row'
     },
     div99: {
         height: 10,
@@ -246,5 +261,14 @@ const styles = StyleSheet.create({
       loginText:{
         fontSize:20,
         fontWeight:"bold"
+      },
+      txt1:{
+        alignSelf:'flex-end',
+        marginBottom:30,
+        borderColor:'#000000',
+        borderWidth:2,
+        padding:7,
+        borderRadius:15,
+        fontWeight:'bold'
       }
 })
