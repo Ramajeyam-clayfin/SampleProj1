@@ -25,6 +25,8 @@ target 'SampleProj1' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+  pod 'RNSensors', :path => '../node_modules/react-native-sensors'
+
   target 'SampleProj1Tests' do
     inherit! :complete
     # Pods for testing

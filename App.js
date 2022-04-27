@@ -7,6 +7,8 @@ import Contacts1 from './Contacts'
 import DeviceInfo1 from './DeviceInfo'
 import Maps1 from './Maps'
 import Navigation from './Animations/Navigation'
+import NativeModule from './NativeModule'
+import Sensors from './Sensors'
 
 const App = () => {
   return (
@@ -14,7 +16,9 @@ const App = () => {
       {/* <Camera/> */}
       {/* <Contacts1/> */}
       {/* <DeviceInfo1/> */}
-      <Maps1/>
+      {/* <Maps1/> */}
+      {/* <NativeModule/> */}
+      <Sensors/>
       <NavigationContainer>
         {/* <Navigation/> */}
       </NavigationContainer>
