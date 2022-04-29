@@ -2,20 +2,54 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View
+  View,
+  Animated
 } from 'react-native';
-import { accelerometer } from "react-native-sensors";
+import { accelerometer, gyroscope } from "react-native-sensors";
 
 
 
 
 const Sensors = () => {
-    const subscription = accelerometer.subscribe(({ x, y, z, timestamp }) =>
-        console.log({ x, y, z, timestamp })
+  const [Xaxis , setXaxis] = React.useState(0)
+  const [Yaxis , setYaxis] = React.useState(0)
+
+  React.useEffect(()=>{
+    // const subscription = accelerometer.subscribe(({ x, y, z, timestamp }) =>
+    //   {  
+    //     // console.log({ x, y, z })
+    //     console.log("Xaxis :", x, "Yaxis :", y)
+    //     setXaxis(x)
+    //     // console.log()
+    //     setYaxis(y)
+    //   }
+    // );
+    const subscription = gyroscope.subscribe(({ x, y, z, timestamp }) =>
+      {
+        // console.log({ x, y, z, timestamp })
+        console.log("Xaxis :", x, "Yaxis :", y)
+        setXaxis(x)
+        // console.log()
+        setYaxis(y)
+      }
     );
+    return subscription.remove 
+  }, [])
+    
+    const animatedStyles = {
+      left : (Xaxis*10),
+      top : (Yaxis*10)
+     }
   return (
-    <View>
-      <Text>Sensors</Text>
+    <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+      {/* <Text>Sensors</Text> */}
+      <Animated.View style={
+            [styles.box, 
+             animatedStyles
+            //this.state.animation.getLayout()
+            ]}>
+              <Text style={styles.textStyle}>Clayfin</Text>
+          </Animated.View>
     </View>
   )
 }
@@ -89,5 +123,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
+  },
+  box: {
+    width: 100,
+    height: 100,
+    backgroundColor: "tomato",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
